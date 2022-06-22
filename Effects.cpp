@@ -133,7 +133,7 @@ void Effect_NYE_Countdown::SetModeBasedOnTime()
 			}
 		}
 	}
-	else if (millisToMidnight > 10000)
+	else if (millisToMidnight > 60000) //More than 60 seconds
 	{
 		static int callCount = 0;
 		if (callCount == 0)
@@ -149,6 +149,25 @@ void Effect_NYE_Countdown::SetModeBasedOnTime()
 				NYE_mode = NeopixelBall::BallMode::RandomGlow;
 				neopixelBall->effectDelay = 1000;
 				neopixelBall->effectList[NYE_mode]->updateArgs("glowingPixelCount", "20");
+			}
+		}
+	}
+	else if (millisToMidnight > 10000) //More than 10 seconds
+	{
+		static int callCount = 0;
+		if (callCount == 0)
+		{
+			callCount++;
+			NYE_mode = NeopixelBall::BallMode::OFF;
+		}
+		else if(callCount == 1)
+		{
+			callCount++;
+			if (NYE_mode != NeopixelBall::BallMode::RandomGlow)
+			{
+				NYE_mode = NeopixelBall::BallMode::RandomGlow;
+				neopixelBall->effectDelay = 1000;
+				neopixelBall->effectList[NYE_mode]->updateArgs("glowingPixelCount", "100");
 			}
 		}
 	}
@@ -329,7 +348,7 @@ void Effect_NYE_Countdown::SetModeBasedOnTime()
 			neopixelBall->effectDelay = Effect_SinglePulse::delayFromRunTime(500);
 		}
 	}
-	else if (millisToMidnight > -10000)
+	else if (millisToMidnight > -15000)
 	{
 		static bool firstCall = true;
 		if (firstCall)
@@ -338,6 +357,8 @@ void Effect_NYE_Countdown::SetModeBasedOnTime()
 			if (NYE_mode != NeopixelBall::BallMode::RandomBrightGlow)
 			{
 				NYE_mode = NeopixelBall::BallMode::RandomBrightGlow;
+				neopixelBall->effectDelay = 250;
+				neopixelBall->effectList[NYE_mode]->updateArgs("glowingPixelCount", "45");
 			}
 		}
 	}
