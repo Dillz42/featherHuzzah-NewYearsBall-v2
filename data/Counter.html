@@ -1,0 +1,8 @@
+<input id="currentCount" type="number" value="1" min="0" max="180" onchange="updateCurrentCount()">
+<script>
+    function updateCurrentCount() {
+        var form = new FormData();
+        form.append("currentCount", document.getElementById("currentCount").value);
+        httpPost("led", form)
+    }
+</script>

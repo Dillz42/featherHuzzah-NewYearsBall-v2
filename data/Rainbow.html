@@ -1,0 +1,8 @@
+<input id="rainbowAxis" type="number" value="0" min="0" max="11" onchange="updateRainbowAxis()">
+<script>
+    function updateRainbowAxis() {
+        var form = new FormData();
+        form.append("rainbowAxis", document.getElementById("rainbowAxis").value);
+        httpPost("led", form)
+    }
+</script>

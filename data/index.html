@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width =device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial;
+        }
+        /* Style the tab */
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+            /* Style the buttons inside the tab */
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+                font-size: 17px;
+            }
+                /* Change background color of buttons on hover */
+                .tab button:hover {
+                    background-color: #ddd;
+                }
+                /* Create an active/current tablink class */
+                .tab button.active {
+                    background-color: #ccc;
+                }
+        /* Style the tab content */
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+    </style>
+</head>
+<body>
+    <h3>Up Time: {{UPTIME}}</h3>
+    <!--LED Controls-->
+    <div>
+        <h2>LED Controls</h2>
+        Brightness: <input id="ledBrightness" type="range" min="1" max="256" value="{{LED_BRIGHTNESS}}" onchange="updateLedBrightnessAndSpeed()"/>
+        Effect Speed: <input id="ledEffectSpeed" type="range" min="0" max="2047" value="{{EFFECT_SPEED}}" onchange="updateLedBrightnessAndSpeed()"/>
+        <script>
+            function updateLedBrightnessAndSpeed() {
+                var form = new FormData();
+                form.append("brightness", document.getElementById("ledBrightness").value);
+                form.append("effectSpeed", document.getElementById("ledEffectSpeed").value);
+                httpPost("led", form)
+            }
+        </script>
+        <div class="tab">
+            {{TAB_CONTENT}}
+        </div>
+
+        {{TAB_BODIES}}
+    </div>
+
+    <!--MOTOR CONTROLS-->
+    <div>
+        <style>
+
+            .grid-container {
+                display: grid;
+                grid-template-areas:
+                    'header header'
+                    'left1 right1'
+                    'left2 right1'
+                    'left3 right3'
+                    'left4 right3'
+                    'footer footer';
+                gap: 5px;
+                background-color: #2196F3;
+                padding: 5px;
+            }
+
+                .grid-container > div {
+                    background-color: rgba(255, 255, 255, 0.8);
+                    text-align: center;
+                    font-size: 30px;
+                }
+
+            .slider {
+                -webkit-appearance: none;
+                width: 100%;
+                height: 25px;
+                background: #d3d3d3;
+                outline: none;
+                opacity: 0.7;
+                -webkit-transition: .2s;
+                transition: opacity .2s;
+            }
+
+                .slider:hover {
+                    opacity: 1;
+                }
+
+                .slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 25px;
+                    height: 25px;
+                    background: lime;
+                    cursor: pointer;
+                }
+
+                .slider::-moz-range-thumb {
+                    width: 25px;
+                    height: 25px;
+                    background: lime;
+                    cursor: pointer;
+                }
+
+            .button {
+                width: 100%;
+                height: 100%;
+                font-size: 30px;
+                color: lime;
+                background-color: black;
+                text-decoration: none;
+                text-align: center;
+            }
+
+            .select {
+                font-size: 30px;
+                color: lime;
+                background-color: black;
+            }
+        </style>
+
+        <h2>Motor Controls</h2>
+        <div class="grid-container">
+            <div style="grid-area: header">"" + newSpeed + </div>
+            <div style="grid-area: left1">
+                <button class="button" onclick="clickForward()">FORWARD</button>
+            </div>
+            <div style="grid-area: left2">
+                <button class="button" onclick="clickStop()">STOP</button>
+            </div>
+            <div style="grid-area: left3">
+                <button class="button" onclick="clickBackward()">BACKWARD</button>
+            </div>
+            <div style="grid-area: left4">
+                <button class="button" onclick="clickRelease()">RELEASE</button>
+            </div>
+            <div style="grid-area: right1">
+                Step Mode
+                <select id="StepSelect" class="select" onchange="updateStepMode()">
+                    <option>Microstep</option>
+                    <option>Single Step</option>
+                    <option>Double Step</option>
+                    <option>Interweave</option>
+                </select>
+            </div>
+            <div style="grid-area: right3">
+                Acceleration
+                <input type="range" id="Acceleration" min="1" step="1" max="50" value="50" class="slider" id="myRange" oninput="this.nextElementSibling.value = this.value; updateAcceleration();">
+                <output style="width: 100%">50</output>
+            </div>
+            <div style="grid-area: footer">
+                <div style: "text-align: center">
+                    Target Speed
+                    <input type="range" id="Speed" min="1" max="200" value="200" class="slider" id="myRange" oninput="this.nextElementSibling.value = this.value; updateSpeed();">
+                    <output>200</output>
+                </div>
+            </div>
+
+            <script>
+                function clickForward() {
+                    httpPost("motor/forward", document.getElementById("Speed").value);
+                }
+
+                function clickBackward() {
+                    httpPost("motor/backward", document.getElementById("Speed").value);
+                }
+
+                function clickStop() {
+                    httpPost("motor/stop", "STOP");
+                }
+
+                function clickRelease() {
+                    httpPost("motor/release", "RELEASE");
+                }
+
+                function updateStepMode() {
+                    httpPost("motor/stepMode", document.getElementById("StepSelect").value);
+                }
+
+                function updateAcceleration() {
+                    httpPost("motor/acceleration", document.getElementById("Acceleration").value);
+                }
+
+                function updateSpeed() {
+                    httpPost("motor/speed", document.getElementById("Speed").value);
+                }
+            </script>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        function openTab(evt, tabId) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabId).style.display = "block";
+            evt.currentTarget.className += " active";
+
+            var form = new FormData();
+            form.append("mode", tabId);
+            httpPost("led", form);
+        }
+
+        function httpPost(url, data) {
+            var settings = {
+                "url": url,
+                "method": "POST",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": data
+            };
+
+            $.ajax(settings).done(function (response) {
+                console.log(response);
+            });
+        }
+
+        function httpGet(url) {
+            fetch(url).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                console.log(data);
+            }).catch(function () {
+                console.log("Booo");
+            });
+        }
+    </script>
+</body>
+</html>

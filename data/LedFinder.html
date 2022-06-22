@@ -1,0 +1,16 @@
+<input id="LedFinderNumber" type="number" value="5" min="0" max="179" onchange="updateLedFinderNumber()">
+<input id="LedFinderNumberDepth" type="number" value="0" min="0" max="8" onchange="updateLedFinderDepth()">
+<script>
+    function updateLedFinderNumber() {
+        var form = new FormData();
+        form.append("ledFinderNumber", document.getElementById("LedFinderNumber").value);
+        form.append("ledFinderDepth", document.getElementById("LedFinderNumberDepth").value);
+        httpPost("led", form)
+    }
+    function updateLedFinderDepth() {
+        var form = new FormData();
+        form.append("ledFinderNumber", document.getElementById("LedFinderNumber").value);
+        form.append("ledFinderDepth", document.getElementById("LedFinderNumberDepth").value);
+        httpPost("led", form)
+    }
+</script>
